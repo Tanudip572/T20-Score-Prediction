@@ -105,7 +105,7 @@ T20-Score-Prediction/
 ### Clone Repository
 
 ```bash
-git clone https://github.com/your-username/T20-Score-Prediction.git
+git clone https://github.com/Tanudip572/T20-Score-Prediction.git
 cd T20-Score-Prediction
 ```
 
