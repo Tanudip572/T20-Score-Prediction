@@ -5,14 +5,22 @@ import numpy as np
 import xgboost
 from xgboost import XGBRegressor
 
+pipe = None
 try:
-    pipe = pickle.load(open('pipe.pkl','rb'))
+    with open('pipe.pkl','rb') as f:
+        pipe = pickle.load(f)
 except Exception:
-    pipe = None
-    st.warning("Model file 'pipe.pkl' not found. Upload it below or add it to the repo.")
-    uploaded_file = st.file_uploader('Upload pipe.pkl', type=['pkl'])
-    if uploaded_file is not None:
-        pipe = pickle.load(uploaded_file)
+    st.warning("Model file 'pipe.pkl' not found or could not be loaded. Upload it below or add it to the repo.")
+
+uploaded_file = st.file_uploader('Upload pipe.pkl', type=['pkl'])
+if uploaded_file is not None:
+    try:
+        data = uploaded_file.read()
+        pipe = pickle.loads(data)
+        st.success("Model uploaded and loaded successfully.")
+    except Exception as e:
+        pipe = None
+        st.error(f"Uploaded file could not be loaded as a pickle: {e}")
 
 
 teams = ['Australia',
