@@ -2,15 +2,26 @@ import streamlit as st
 import pickle
 import pandas as pd
 import numpy as np
-import xgboost
-from xgboost import XGBRegressor
+import importlib
+
+# Delay importing xgboost until it's available to avoid startup failures
+try:
+    import xgboost
+    from xgboost import XGBRegressor
+    have_xgboost = True
+except Exception:
+    have_xgboost = False
 
 pipe = None
-try:
-    with open('pipe.pkl','rb') as f:
-        pipe = pickle.load(f)
-except Exception:
-    st.warning("Model file 'pipe.pkl' not found or could not be loaded. Upload it below or add it to the repo.")
+if have_xgboost:
+    try:
+        with open('pipe.pkl','rb') as f:
+            pipe = pickle.load(f)
+    except Exception:
+        pipe = None
+        st.warning("Model file 'pipe.pkl' not found or could not be loaded. Upload it below or add it to the repo.")
+else:
+    st.info("Model predictions are temporarily disabled while server dependencies install. You can still upload a model file to enable predictions.")
 
 uploaded_file = st.file_uploader('Upload pipe.pkl', type=['pkl'])
 if uploaded_file is not None:
@@ -21,7 +32,6 @@ if uploaded_file is not None:
     except Exception as e:
         pipe = None
         st.error(f"Uploaded file could not be loaded as a pickle: {e}")
-
 
 teams = ['Australia',
  'India',
@@ -112,5 +122,3 @@ if st.button('Predict Score'):
         })
         result = pipe.predict(input_df)
         st.header("Predicted Score - " + str(int(result[0])))
-
-
