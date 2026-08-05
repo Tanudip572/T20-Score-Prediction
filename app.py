@@ -2,9 +2,8 @@ import streamlit as st
 import pickle
 import pandas as pd
 import numpy as np
-import xgboost
-from xgboost import XGBRegressor
-
+# Delay importing xgboost until it's needed to avoid import errors during startup
+# (xgboost is required only for unpickling or training the model).
 pipe = None
 try:
     with open('pipe.pkl','rb') as f:
