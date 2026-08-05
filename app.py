@@ -5,7 +5,15 @@ import numpy as np
 import xgboost
 from xgboost import XGBRegressor
 
-pipe = pickle.load(open('pipe.pkl','rb'))
+try:
+    pipe = pickle.load(open('pipe.pkl','rb'))
+except Exception:
+    pipe = None
+    st.warning("Model file 'pipe.pkl' not found. Upload it below or add it to the repo.")
+    uploaded_file = st.file_uploader('Upload pipe.pkl', type=['pkl'])
+    if uploaded_file is not None:
+        pipe = pickle.load(uploaded_file)
+
 
 teams = ['Australia',
  'India',
@@ -79,11 +87,22 @@ last_five = st.number_input('Runs scored in last 5 overs')
 if st.button('Predict Score'):
     balls_left = 120 - (overs*6)
     wickets_left = 10 -wickets
-    crr = current_score/overs
+    crr = current_score/overs if overs>0 else 0
 
-    input_df = pd.DataFrame(
-     {'batting_team': [batting_team], 'bowling_team': [bowling_team],'city':city, 'current_score': [current_score],'balls_left': [balls_left], 'wickets_left': [wickets], 'crr': [crr], 'last_five': [last_five]})
-    result = pipe.predict(input_df)
-    st.header("Predicted Score - " + str(int(result[0])))
+    if pipe is None:
+        st.error("No model available to make predictions. Upload pipe.pkl or add it to the repository.")
+    else:
+        input_df = pd.DataFrame({
+            'batting_team': [batting_team],
+            'bowling_team': [bowling_team],
+            'city': [city],
+            'current_score': [current_score],
+            'balls_left': [balls_left],
+            'wickets_left': [wickets_left],
+            'crr': [crr],
+            'last_five': [last_five]
+        })
+        result = pipe.predict(input_df)
+        st.header("Predicted Score - " + str(int(result[0])))
 
 
