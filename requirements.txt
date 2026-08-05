@@ -1,1 +1,9 @@
-streamlit\npandas\nnumpy\nxgboost==3.4.0\nscikit-learn==1.6.1\n
+streamlit
+
+pandas
+
+numpy
+
+xgboost==3.4.0
+
+scikit-learn==1.6.1
