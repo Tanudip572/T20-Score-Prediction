@@ -29,13 +29,16 @@ else:
 
 uploaded_file = st.file_uploader('Upload pipe.pkl', type=['pkl'])
 if uploaded_file is not None:
-    try:
-        data = uploaded_file.read()
-        pipe = pickle.loads(data)
-        st.success("Model uploaded and loaded successfully.")
-    except Exception as e:
-        pipe = None
-        st.error(f"Uploaded file could not be loaded as a pickle: {e}")
+    if not have_sklearn:
+        st.error("Cannot load uploaded model: scikit-learn is not yet available on the server. Wait for the app to finish installing dependencies, then retry upload, or redeploy with scikit-learn in requirements.")
+    else:
+        try:
+            data = uploaded_file.read()
+            pipe = pickle.loads(data)
+            st.success("Model uploaded and loaded successfully.")
+        except Exception as e:
+            pipe = None
+            st.error(f"Uploaded file could not be loaded as a pickle: {e}")
 
 
 teams = ['Australia',
